@@ -1,15 +1,5 @@
 name: Build VyOS LTS
 
-# on: 
-#   release:
-#     types: [published]
-#   push:
-#     branches: 
-#       - master
-# on:
-#   push:
-#     tags:
-#       - 'v*'
 on:
   workflow_dispatch  
 
@@ -30,6 +20,7 @@ jobs:
         git remote add origin https://github.com/vyos/vyos-build.git
         git fetch --depth 1 origin "$RELEASE_COMMIT_HASH"
         git reset --hard FETCH_HEAD
+        docker build -t vyos/vyos-build:equuleus docker
         docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:equuleus bash -c './configure --architecture amd64 --build-type release --version "$RELEASE_VERSION" && sudo make iso'
 
     - name: Upload binaries to release
